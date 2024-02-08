@@ -1,16 +1,33 @@
 ---
+import { getCollection, type CollectionEntry } from 'astro:content'
+import SearchForm from '../components/SearchForm.astro'
+import HihglightArticle  from '../components/HighlightArticle.astro'
+import Layout from '../layouts/Layout.astro'
+import { HOMEPAGE_ARTICLE_LIMIT } from '../variables';
+import Card from '../components/Card.astro';
 
+const allBlogArticles: CollectionEntry<'blog'>[] = (await getCollection('blog')).sort((a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const highlightArticle: CollectionEntry<'blog'> = allBlogArticles[0];
+const restArticles: CollectionEntry<'blog'>[] = allBlogArticles.slice(1);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="O HTML-u, JS-ie i inne takie, takie">
+	<!-- Top Grid -->
+	<div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+		<div>
+			<h1 class="text-5xl font-bold mt-4 mb-8 leading-tight xl:text-6xl">
+			Articles, Stories & Tutorials for Tech People
+			</h1>
+			<SearchForm />
+			
+		</div>
+		<HihglightArticle  article={highlightArticle} />
+	</div>
+
+	<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+		{restArticles.slice(0, HOMEPAGE_ARTICLE_LIMIT).map (article => (
+			<Card article={article} />
+			))}
+	</div>
+</Layout>
